@@ -263,34 +263,34 @@ endState:
 	Bld    	spiLEDS,1
 	
 	rcall 	delay
-	call	writedisplay						;preform all output functions
+	call	writedisplay							;preform all output functions
 		
 	rjmp   	loop				
 
 
 InForest:
 	
-	// Display 0 and turn off LEDs
+										; Display 0 and turn off LEDs
 
 
 	
-	// all discrete LEDs off
+										;all discrete LEDs off
 	call  Hex_2_7seg
-	DangerousGame:
+DangerousGame:
 	mov spi7seg, r27
 	clr    spiLEDS
 	call   WriteDisplay
-	// Power
+										;Power
 
-	Down:
+Down:
 	ldi    r16, 0x05 
-	// When bits SM2..0 are written to 010 (Table 9-1),
+										;When bits SM2..0 are written to 010 (Table 9-1),
 	out    SMCR, r16 
-	// and SE = 1 in the SMCR register (Section 9.11.1),
+										;and SE = 1 in the SMCR register (Section 9.11.1),
 	sleep            
-	// with SLEEP the MCU enters Powerdown(Section 9.5)
+										;with SLEEP the MCU enters Powerdown(Section 9.5)
 	
-ret
+	ret
 Hex_2_7seg:
 
 	
@@ -306,7 +306,7 @@ Hex_2_7seg:
 
 	jmp dangerousGame
 
-;External Interrupt 0 Service Routine
+										;External Interrupt 0 Service Routine
 INT0_ISR:
 
 	push    reg_F
@@ -323,33 +323,33 @@ INT0_ISR:
   
 Delay:
 
-	push r16									;preserve I/O registers values
+	push r16								;preserve I/O registers values
 
 wait:
 
-	in 		r16, TIFR1								;actions to reload the timer 
-	bst 	r16, TOV1								;after the delay has been made
-	brtc 	wait									;is my timer empty if not continue
-	sbi 	TIFR1, TOV1								;reload my timer
+	in 	r16, TIFR1							;actions to reload the timer 
+	bst 	r16, TOV1							;after the delay has been made
+	brtc 	wait								;is my timer empty if not continue
+	sbi 	TIFR1, TOV1							;reload my timer
 	ldi 	r16, 0x0B
 	sts 	TCNT1H, r16
 	ldi 	r16, 0xDC
 	sts 	TCNT1L, r16
 	
-	pop 	r16										;return original register values
+	pop 	r16								;return original register values
 	ret
 
 
 Pulse:
 
 	cbi   	PORTD, dff_clk						
-	sbi		PORTD, dff_clk
+	sbi	PORTD, dff_clk
 	ret
 
 
 myWay:
 	push 	r16
-	in 		r15, sreg
+	in 	r15, sreg
 	push 	r17
 
 	mov 	r17, r24
@@ -359,16 +359,16 @@ myWay:
 	rjmp 	leftWall
 
 noLeftWall:
-	mov		r24, r17
+	mov	r24, r17
 	rcall 	HitWall
 	tst 	r24
 	breq	noLeftNoHitWall
 	rjmp	noLeftHitWall
 	
 noLeftnoHitWall:
-	mov		r24, r17
+	mov	r24, r17
 	rcall	RightPaw
-	tst		r24
+	tst	r24
 	brne	incrementN
 	mov 	r24, r17
 	rjmp 	wayFound
@@ -377,7 +377,7 @@ noLeftnoHitWall:
 incrementN:
 	lds 	r16, nTimes
 	inc 	r16
-	sts		nTimes, r16
+	sts	nTimes, r16
 	cpi 	r16, 0x03
 	breq 	time2TurnLeft
 	cpi 	r16, 0x05
@@ -391,7 +391,7 @@ time2TurnLeft:
 	rjmp 	wayFound
 
 noLeftHitWall:
-	mov		r24, r17
+	mov	r24, r17
 	rcall 	RightPaw
 	tst 	r24
 	breq	time2TurnRight
@@ -403,69 +403,69 @@ time2TurnRight:
 	rjmp 	wayFound
 
 leftWall:
-	mov		r24, r17
+	mov	r24, r17
 	rcall	Hitwall
-	tst		r24
+	tst	r24
 	breq	leftNoHitWall
 	rjmp 	leftHitWall
 
 leftnoHitWall:
-	mov		r24, r17
+	mov	r24, r17
 	rcall	RightPaw
 	tst 	r24
 	breq	time2TurnRight
-	mov		r24, r17
+	mov	r24, r17
 	rjmp 	wayFound
 
 leftHitWall:
-	mov		r24, r17
+	mov	r24, r17
 	rcall	RightPaw
 	tst 	r24
 	breq	time2TurnRight
 	rjmp 	time2TurnAround
 
 time2TurnAround:
-	mov		r24, r17
+	mov	r24, r17
 	rjmp 	TurnAround
-	IamTurnAround:
+IamTurnAround:
 	rjmp 	wayFound
 
 wayFound:
-	pop r17
-	out sreg, r15
-	pop r16
-	jmp takeMeHome
+	pop 	r17
+	out 	sreg, r15
+	pop 	r16
+	jmp	takeMeHome
 
 
-	CountBees:
+CountBees:
 
-	push r16
-	push r15
-	in	 reg_F,SREG
-	push r17
-	push r18
+	push 	r16
+	push 	r15
+	in   	reg_F,SREG
+	push 	r17
+	push 	r18
 
-	ldi ZH, high(Bee_table<<1)
-	ldi ZL, low(Bee_table<<1)
+	ldi 	ZH, high(Bee_table<<1)
+	ldi 	ZL, low(Bee_table<<1)
 	
 	
-	lds r16, bees
-	mov r17, r16
+	lds 	r16, bees
+	mov 	r17, r16
 	lds	r18, hive
 	add	r18,r17
 	sts	hive, r18
 	
-	add Zl,r16
-	lpm r16,Z
-	mov spi7seg,r16
-	call writedisplay
-	rjmp end2  
+	add 	Zl,r16
+	lpm 	r16,Z
+	mov 	spi7seg,r16
+	call 	writedisplay
+	rjmp 	end2  
 
-	end2:
-	pop r18
-	pop r17
-	out SREG, reg_F
-	pop r15
-	pop r16
+end2:
+	pop 	r18
+	pop 	r17
+	out 	SREG, reg_F
+	pop	 r15
+	pop 	r16
 
 	ret
