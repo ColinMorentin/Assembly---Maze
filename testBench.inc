@@ -20,18 +20,18 @@
 
 DrawRoom:
 	
-	push   reg_F 			// moving this register onto the stack so
-	in     reg_F,SREG       // it can be used to save the value in SREG
+	push   reg_F 		 ; moving this register onto the stack so
+	in     reg_F,SREG        ; it can be used to save the value in SREG
 	push   r16
 
-    	mov    r16, r24         // move input to temporary register
-	cbr    r24, 0b11111100  // room bits 1 and 0 are already aligned to segments b and a
+    	mov    r16, r24          ; move input to temporary register
+	cbr    r24, 0b11111100   ; room bits 1 and 0 are already aligned to segments b and a
     	cbr    r16, 0b11110011
 	swap   r16
-    	lsr    r16              // room bits 3 and 2 are now aligned to segments g and f
-	or     r24, r16         // SW7:SW4 now mapped to 7 segment display
+    	lsr    r16               ; room bits 3 and 2 are now aligned to segments g and f
+	or     r24, r16          ; SW7:SW4 now mapped to 7 segment display
 		
-	pop    r16 				// restore original contents of r16
+	pop    r16 	         ; restore original contents of r16
 	out    SREG,reg_F
 	pop    reg_F
 
